@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="execute">
+	<sql id="removeCollectionMappingByContainedId">
+    	<![CDATA[
+    	    DELETE FROM UAA_II_COLLECTION_MAPPING WHERE CONTAINED_COLLECTION_ID=:containedCollectionId
+    	]]>
+	</sql>
+	<sql id="removeCollectionMappingByAppertainedId">
+   		<![CDATA[
+   			DELETE FROM UAA_II_COLLECTION_MAPPING WHERE COLLECTION_ID=:appertainedCollectionId
+   		]]>
+	</sql>
+	<sql id="insert_Collection_Mapping">
+   		<![CDATA[
+   			INSERT INTO UAA_II_COLLECTION_MAPPING(ID,COLLECTION_ID,CONTAINED_COLLECTION_ID) VALUES(:id,:appertainedCollectionId,:containedCollectionId)
+   		]]>
+	</sql>
+	<sql id="delete_Collection_Mapping">
+   		<![CDATA[
+   			DELETE FROM UAA_II_COLLECTION_MAPPING WHERE CONTAINED_COLLECTION_ID=:containedCollectionId AND COLLECTION_ID=:appertainedCollectionId
+   		]]>
+	</sql>
+
+	<sql id="remove_authorization_collection_mapping">
+   		<![CDATA[
+   			DELETE FROM UAA_II_AUTH_COLLECTION_MAPPING
+   			WHERE 1=1
+   				<#if collectionId?exists>
+   					AND COLLECTION_ID=:collectionId
+   				</#if>
+   				<#if authId?exists>
+   					AND AUTH_ID=:authId
+   				</#if>
+   		]]>
+	</sql>
+	<sql id="add_authorization_collection_mapping">
+   		<![CDATA[
+   			INSERT INTO UAA_II_AUTH_COLLECTION_MAPPING(ID,AUTH_ID,COLLECTION_ID) VALUES(:id,:authId,:collectionId)
+   		]]>
+	</sql>
+
+	<sql id="insert_role_parents">
+   		<![CDATA[
+   			INSERT INTO UAA_II_ROLE_PARENTS(ID,ROLE_CODE,ROLE_PARENT) VALUES(:id,:childRoleId,:parentRoleId)
+   		]]>
+	</sql>
+	<sql id="removeRoleMappingByParentRoleId">
+   		<![CDATA[
+   			DELETE FROM UAA_II_ROLE_PARENTS WHERE UPPER(ROLE_PARENT)=UPPER(:parentRoleId)
+   		]]>
+	</sql>
+	<sql id="removeRoleMappingByChildRoleId">
+   		<![CDATA[
+   			DELETE FROM UAA_II_ROLE_PARENTS WHERE UPPER(ROLE_CODE)=UPPER(:childRoleId)
+   		]]>
+	</sql>
+	<sql id="delete_role_parents">
+   		<![CDATA[
+   			DELETE FROM UAA_II_ROLE_PARENTS WHERE UPPER(ROLE_CODE)=UPPER(:childRoleId) AND UPPER(ROLE_PARENT)=UPPER(:parentRoleId)
+   		]]>
+	</sql>
+
+	<sql id="removeMappingByCollectionIdAndType">
+		<![CDATA[
+			DELETE FROM UAA_II_ROLE_AUTHCTION_MAPPING WHERE AUTHCOLLECTION_ID=:authcollectionId AND UPPER(MAPPING_TYPE)=UPPER(:mappingType)
+		]]>
+	</sql>
+	<sql id="removeRoleCollectionMappingByRoleCode">
+		<![CDATA[
+			DELETE FROM UAA_II_ROLE_AUTHCTION_MAPPING WHERE UPPER(ROLE_CODE)=UPPER(:roleCode)
+		]]>
+	</sql>
+	<sql id="insertRoleCollectionMapping">
+		<![CDATA[
+			INSERT INTO UAA_II_ROLE_AUTHCTION_MAPPING(ID,ROLE_CODE,AUTHCOLLECTION_ID,MAPPING_TYPE) VALUES(:id,:roleCode,:authcollectionId,:mappingType)
+		]]>
+	</sql>
+	<sql id="delete_role_collectionMapping">
+		<![CDATA[
+			DELETE FROM UAA_II_ROLE_AUTHCTION_MAPPING WHERE UPPER(ROLE_CODE)=UPPER(:roleCode) AND AUTHCOLLECTION_ID=:authcollectionId AND UPPER(MAPPING_TYPE)=UPPER(:mappingType)
+		]]>
+	</sql>
+
+	<sql id="insert_role_user_mapping">
+    	<![CDATA[
+    	    INSERT INTO UAA_II_USER_ROLE_MAPPING(ID,USER_IDENTITY,ROLE_CODE,IDENTITY_TYPE,DEPARTMENT_ID) VALUES(:id,:userIdentity,:roleCode,:identityType,:departmentId)
+    	]]>
+	</sql>
+	<sql id="delete_role_user_mapping">
+    	<![CDATA[
+    		DELETE FROM UAA_II_USER_ROLE_MAPPING WHERE UPPER(USER_IDENTITY)=UPPER(:userIdentity) AND UPPER(ROLE_CODE)=UPPER(:roleCode) AND UPPER(IDENTITY_TYPE)=UPPER(:identityType)
+    	]]>
+	</sql>
+	<sql id="removeUserRoleMappingByRoleCode">
+    	<![CDATA[
+    	    DELETE FROM UAA_II_USER_ROLE_MAPPING WHERE UPPER(ROLE_CODE)=UPPER(:roleCode)
+    	]]>
+	</sql>
+
+	<sql id="removeTreeNodeByTreeId">
+		<![CDATA[
+    	    DELETE FROM UAA_II_MENU
+    	    WHERE  FIND_IN_SET(id, queryChildrenMenuIds(:treeId))
+    	]]>
+	</sql>
+
+	<sql id="add_authorization">
+		<![CDATA[
+				INSERT INTO UAA_II_AUTHORIZATION
+						(
+							ID, SYSTEM_ID, TYPE,
+							RESOURCES, DESCRIPTION, TREE_PARENT_ID,
+							URL, ORDER_NUMBER, SELF_MENU
+						)
+				VALUES (
+							:id,:systemId,:type,
+							:resource,:description,:treeParentId,
+							:url,:orderNumber,:selfMenu
+						)
+    	]]>
+	</sql>
+	<sql id="add_authorization_collection">
+		<![CDATA[
+				INSERT INTO UAA_II_AUTH_COLLECTION
+						(
+							ID, SYSTEM_ID, NAME,
+							DESCRIPTION
+						)
+				VALUES (
+							:id,:systemId,:name,
+							:description
+						)
+    	]]>
+	</sql>
+
+
+
+
+	<sql id="add_department">
+		<![CDATA[
+				INSERT INTO UAA_II_DEPARTMENT
+						(
+							ID, NAME, PARENT_ID
+						)
+				VALUES (
+							:id,:name,:parentId
+						)
+    	]]>
+	</sql>
+
+	<sql id="deleteDepartment">
+		<![CDATA[
+    	    DELETE FROM UAA_II_DEPARTMENT
+    	    WHERE  FIND_IN_SET(id, queryChildrenDepartmentIds(:id))
+    	]]>
+	</sql>
+
+	<sql id="add_user">
+		<![CDATA[
+    	   INSERT INTO UAA_II_USER_INFO(USER_ID,PASSWORD,DEPARTMENT_ID,NICK_NAME) VALUES(:userId,:password,:departmentId,:nickName)
+    	]]>
+	</sql>
+	<sql id="delete_role_user_mapping_by_userId">
+		<![CDATA[
+    		DELETE FROM UAA_II_USER_ROLE_MAPPING WHERE UPPER(USER_IDENTITY)=UPPER(:userIdentity)  AND UPPER(IDENTITY_TYPE)=UPPER(:identityType)
+    	]]>
+	</sql>
+
+	<sql id="delete_users_by_departmentId">
+		<![CDATA[
+    		DELETE FROM UAA_II_USER_INFO WHERE DEPARTMENT_ID=:departmentId
+    	]]>
+	</sql>
+
+	<sql id="delete_user_role_bind_relations_by_departmentId">
+		<![CDATA[
+    		DELETE FROM UAA_II_USER_ROLE_MAPPING WHERE DEPARTMENT_ID=:departmentId
+    	]]>
+	</sql>
+</sqlMap>
